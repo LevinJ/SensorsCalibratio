@@ -33,12 +33,12 @@ bool YawCalib::LoadData(const std::vector<Eigen::Matrix4d> &lidar_pose){
         lidar_pose_yaw_.push_back(yaw);
     }
 
-    if(save_trajectory_xy){
-        plt::plot(lidar_pose_x_, lidar_pose_y_);
-        plt::savefig(output_dir_ + "trajectory.png");
-        // plt::show();
-        plt::close();
-    }
+    // if(save_trajectory_xy){
+    //     plt::plot(lidar_pose_x_, lidar_pose_y_);
+    //     plt::savefig(output_dir_ + "trajectory.png");
+    //     // plt::show();
+    //     plt::close();
+    // }
     return true;
 }
 
@@ -66,7 +66,7 @@ bool YawCalib::Calibrate(){
     for (unsigned int i = 0; i < samples_yaw.size(); i++)
     {
         DataTable sample_yaw = samples_yaw[i];
-        plt::plot(sample_yaw.getTableX()[0], sample_yaw.getVectorY(), "k--", {{"label", "trajectory yaw"}});
+        // plt::plot(sample_yaw.getTableX()[0], sample_yaw.getVectorY(), "k--", {{"label", "trajectory yaw"}});
         double yaw;
         if(CalibrateSingle(sample_yaw, yaw)){
             offset_yaws.push_back(yaw);
@@ -81,14 +81,14 @@ bool YawCalib::Calibrate(){
         times.push_back(i);
     }
     
-    plt::plot(times, lidar_pose_yaw_, "k-", {{"label", "lidar pose yaw"}});
-    plt::legend();
-    plt::savefig(output_dir_ + "compared_yaw.png");
-    plt::close();
+    // plt::plot(times, lidar_pose_yaw_, "k-", {{"label", "lidar pose yaw"}});
+    // plt::legend();
+    // plt::savefig(output_dir_ + "compared_yaw.png");
+    // plt::close();
     if (offset_yaws.size() == 0)
         return false;
     final_yaw_ = Util::WeightMean(offset_yaws, weights);
-    // std::cout << "Average yaw = " << rad2deg(final_yaw_) << " degree" << std::endl;
+    std::cout << "Average yaw = " << rad2deg(final_yaw_) << " degree" << std::endl;
 
     return true;
 }

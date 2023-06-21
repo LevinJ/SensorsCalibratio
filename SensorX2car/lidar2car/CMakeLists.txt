@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(lidar2car)
 
 # compile option
-SET(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")  
+SET(CMAKE_CXX_FLAGS " -g -Wall")  
 
 # compile output path 
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
@@ -19,19 +19,18 @@ find_package(Eigen3 REQUIRED)
 include_directories("/usr/include/eigen3")
 
 # Get ceres
-add_subdirectory(ceres)
-include_directories(${PROJECT_SOURCE_DIR}/ceres/include)
-
+# add_subdirectory(ceres)
+# include_directories(${PROJECT_SOURCE_DIR}/ceres/include)
+find_package(Ceres REQUIRED)
+include_directories(${CERES_INCLUDE_DIRS})
 # Get PCL
-find_package(PCL 1.9 REQUIRED 
-             PATHS "/usr/local/pcl-1.9/share/pcl-1.9/" NO_DEFAULT_PATH)
+find_package(PCL 1.9 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 # Get OpenCV
-find_package(OpenCV REQUIRED 
-             PATHS "/usr/local/opencv-2.4.13/share/OpenCV/" NO_DEFAULT_PATH)
+find_package(OpenCV REQUIRED )
 include_directories(${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_INSTALL_PATH}/lib) 
 
@@ -55,14 +54,13 @@ SET(DEP_LIBS
     ${OpenCV_LIBS}
     splinter-static-3-0
     python2.7
-    ceres
+    ${CERES_LIBRARIES}
 )
 
 file(GLOB_RECURSE SRC_LIST src/*.cpp)
-
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEP_LIBS} -lgomp)
+
 
 ADD_EXECUTABLE(run_lidar2car ${PROJECT_SOURCE_DIR}/app/run_lidar2car.cpp)
 TARGET_LINK_LIBRARIES(run_lidar2car ${PROJECT_NAME})
