@@ -18,6 +18,8 @@ class RPCalib{
         bool Calibrate(Eigen::Matrix4d & extrinsic);
         bool GroundPlaneExtraction(const PointCloudPtr &in_cloud, PointCloudPtr g_cloud, PointCloudPtr ng_cloud, PlaneParam &plane);
 
+        double z_min_;
+        double z_max_;
     private:
         std::string lidar_path_;
         std::string output_dir_;
@@ -30,7 +32,7 @@ class RPCalib{
         const double filter_master_max_range_ = 100.0;
         const double master_normal_check_ = 0.8;
         const double filter_min_range_ = 0.5;
-        const int down_sample_ = 5;
+        const int down_sample_ = 1;
 };
 
 #endif  //  RPZ_CALIB_RPZ_CALIB_H_

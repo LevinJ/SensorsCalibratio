@@ -6,6 +6,8 @@ RPCalib::RPCalib(std::string output_dir)
 {
     output_dir_ = output_dir;
     ground_extractor_.reset(new GroundExtractor);
+    z_min_ = -1000;
+    z_max_ = 1000;
 }
 
 bool RPCalib::LoadData(std::string dataset_folder, const std::vector<Eigen::Matrix4d> &lidar_pose, int start_frame, int end_frame)
@@ -82,8 +84,12 @@ bool RPCalib::Calibrate(Eigen::Matrix4d &extrinsic){
         PCUtil::MinRangeFilter(cloud, filter_min_range_, cloud_out);
 
         // max range filter
+        PointCloudPtr max_cloud(new PointCloud());
+        PCUtil::MaxRangeFilter(cloud_out, filter_master_max_range_, max_cloud);
+
+        //z range filter
         PointCloudPtr master_cloud(new PointCloud());
-        PCUtil::MaxRangeFilter(cloud_out, filter_master_max_range_, master_cloud);
+        PCUtil::ZRangeFilter(max_cloud, z_min_, z_max_, master_cloud);
         
         
         PlaneParam master_gplane;
@@ -120,8 +126,8 @@ bool RPCalib::Calibrate(Eigen::Matrix4d &extrinsic){
         pitchset.push_back(pitch);
     }
 
-    if(trans.size() <= 5)
-        return false;
+    // if(trans.size() <= 2)
+    //     return false;
     std::vector<double> newrollset, newpitchset, newtrans;
     Util::DeleteOutliers(rollset, newrollset, 5);
     Util::DeleteOutliers(pitchset, newpitchset, 5);

@@ -39,6 +39,19 @@ class PCUtil {
         return true;
     }
 
+
+    static bool ZRangeFilter(const PointCloudPtr &in_cloud, double z_min, double z_max,
+                               PointCloudPtr &out_cloud) {
+        out_cloud->points.clear();
+        pcl::PassThrough<pcl::PointXYZI> pass;
+        pass.setInputCloud (in_cloud);
+        pass.setFilterFieldName ("z");
+        pass.setFilterLimits (z_min, z_max);
+        //pass.setNegative (true);
+        pass.filter (*out_cloud);
+        return true;
+    }
+
  private:
 };
 

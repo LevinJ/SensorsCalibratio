@@ -26,10 +26,10 @@ const char usage[] = {
     "  ./bin/run_lidar2car ./data/example ./output/ \n"
     "  ./bin/run_lidar2car ./data/example ./output/ 0 1200\n"};
 
-int test_filter_z()
+int test_filter_z(std::string pcd_path, double z_min, double z_max)
 {
     // load pcd
-    std::string pcd_path = "/media/levin/DATA/zf/semantic_seg/temp_calib/0609/HesaiRear_pcd/00000046.pcd";
+    // std::string pcd_path = "/media/levin/DATA/zf/semantic_seg/temp_calib/0609/HesaiRear_pcd/00000046.pcd";
     PointCloudPtr cloud(new PointCloud());
     if (pcl::io::loadPCDFile(pcd_path, *cloud) < 0)
     {
@@ -38,13 +38,16 @@ int test_filter_z()
     }
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZI>);
+
+    PCUtil::ZRangeFilter(cloud, z_min, z_max, cloud_filtered);
+        
     // Create the filtering object
-    pcl::PassThrough<pcl::PointXYZI> pass;
-    pass.setInputCloud (cloud);
-    pass.setFilterFieldName ("z");
-    pass.setFilterLimits (-2.4, -1.75);
-    //pass.setNegative (true);
-    pass.filter (*cloud_filtered);
+    // pcl::PassThrough<pcl::PointXYZI> pass;
+    // pass.setInputCloud (cloud);
+    // pass.setFilterFieldName ("z");
+    // pass.setFilterLimits (-2.4, -1.75);
+    // //pass.setNegative (true);
+    // pass.filter (*cloud_filtered);
 
     //get statistics
     pcl::MomentOfInertiaEstimation <pcl::PointXYZI> feature_extractor;
@@ -80,7 +83,11 @@ int test_filter_z()
 }
 int main(int argc, char **argv)
 {
-    return test_filter_z();
+    // std::string pcd_path = argv[1];
+    // double z_min = std::stod(argv[2]); 
+    // double z_max = std::stod(argv[3]);
+    // return test_filter_z(pcd_path, z_min, z_max);
+
 
     if (argc != 3 && argc != 5)
     {
@@ -90,19 +97,20 @@ int main(int argc, char **argv)
     std::string dataset_folder = argv[1];
     std::string output_dir = argv[2];
 
+
     int start_frame = 0;
     int end_frame = INT_MAX;
+    RPCalib calibrator1(output_dir);
     if (argc == 5)
     {
-        start_frame = atoi(argv[3]);
-        end_frame = atoi(argv[4]);
+        calibrator1.z_min_ = std::stod(argv[3]); 
+        calibrator1.z_max_ = std::stod(argv[4]);
     }
 
     std::vector<Eigen::Matrix4d> lidar_pose;
     // RunFastLoam(dataset_folder, output_dir, lidar_pose, start_frame, end_frame);
     // std::cout << "Frame num:" << lidar_pose.size() << std::endl;
-
-    RPCalib calibrator1(output_dir);
+    
     calibrator1.LoadData(dataset_folder, lidar_pose, start_frame, end_frame);
     Eigen::Matrix4d extrinsic = Eigen::Matrix4d::Identity();
     double roll = 0, pitch = 0;
