@@ -83,10 +83,14 @@ int test_filter_z(std::string pcd_path, double z_min, double z_max)
 }
 int main(int argc, char **argv)
 {
-    // std::string pcd_path = argv[1];
-    // double z_min = std::stod(argv[2]); 
-    // double z_max = std::stod(argv[3]);
-    // return test_filter_z(pcd_path, z_min, z_max);
+    if (argc == 4){
+        //check range z fitler result
+        std::string pcd_path = argv[1];
+        double z_min = std::stod(argv[2]); 
+        double z_max = std::stod(argv[3]);
+        return test_filter_z(pcd_path, z_min, z_max);
+    }
+    
 
 
     if (argc != 3 && argc != 5)
