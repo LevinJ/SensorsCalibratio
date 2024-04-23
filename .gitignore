@@ -9,3 +9,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 SensorX2car/lidar2car/lib/libsplinter-static-3-0.a
+data/
